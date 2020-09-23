@@ -146,6 +146,8 @@ public:
 	                                             bool bTest);
 	void __fastcall HOOKED_SlidingAndOtherStuff_Func(void* thisptr, int edx, void* a, void* b);
 	void HOOKED_MiddleOfSlidingFunction_Func();
+	static void HOOKED_BMS_WallclimbCheck();
+	void HOOKED_BMS_WallclimbCheck_Func();
 	bool CanTracePlayerBBox();
 
 	void StartTimer()
@@ -205,6 +207,12 @@ protected:
 	_SlidingAndOtherStuff ORIG_SlidingAndOtherStuff;
 	void* ORIG_MiddleOfSlidingFunction;
 
+	void* ORIG_BMS_WallclimbCheck;
+	uintptr_t BMS_WallclimbCheck_JumpTo1;
+	uintptr_t BMS_WallclimbCheck_JumpTo2;
+	bool ORIG_BMS_WallclimbCheck_Jump;
+
+protected:
 	ptrdiff_t off1M_nOldButtons;
 	ptrdiff_t off2M_nOldButtons;
 	bool cantJumpNextTime;

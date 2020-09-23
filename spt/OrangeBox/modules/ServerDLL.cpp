@@ -118,6 +118,30 @@ __declspec(naked) void ServerDLL::HOOKED_MiddleOfSlidingFunction()
 	}
 }
 
+__declspec(naked) void ServerDLL::HOOKED_BMS_WallclimbCheck()
+{
+	__asm {
+		pushad;
+		pushfd;
+	}
+	serverDLL.HOOKED_BMS_WallclimbCheck_Func();
+
+	__asm {
+		cmp serverDLL.ORIG_BMS_WallclimbCheck_Jump, 0x1;
+		je skipped;
+		popfd;
+		popad;
+		jne normal;
+		jmp serverDLL.BMS_WallclimbCheck_JumpTo2;
+
+	normal:
+		jmp serverDLL.BMS_WallclimbCheck_JumpTo1;
+
+	skipped:
+		jmp serverDLL.BMS_WallclimbCheck_JumpTo1;
+	}
+}
+
 #define PRINT_FIND(future_name) \
 	{ \
 		if (ORIG_##future_name) \
@@ -211,7 +235,9 @@ void ServerDLL::Hook(const std::wstring& moduleName,
 	DEF_FUTURE(CPortalGameMovement__TracePlayerBBox);
 	DEF_FUTURE(CGameMovement__GetPlayerMaxs);
 	DEF_FUTURE(CGameMovement__GetPlayerMins);
+	DEF_FUTURE(BMS_WallclimbCheck);
 
+	GET_HOOKEDFUTURE(BMS_WallclimbCheck);
 	GET_HOOKEDFUTURE(FinishGravity);
 	GET_HOOKEDFUTURE(PlayerRunCommand);
 	GET_HOOKEDFUTURE(CheckStuck);
@@ -487,6 +513,22 @@ void ServerDLL::Hook(const std::wstring& moduleName,
 		Warning("y_spt_on_slide_pause_for has no effect.\n");
 	}
 
+	if (ORIG_BMS_WallclimbCheck)
+	{
+		byte* jmpOffset;
+		jmpOffset = (byte*)((uint)ORIG_BMS_WallclimbCheck + 0x2);
+		BMS_WallclimbCheck_JumpTo1 = (uint)ORIG_BMS_WallclimbCheck + 0x6 + (uint)*jmpOffset;
+
+		DevMsg("[server.dll] BMS Wallclimb check will now jump forward to %p upon disabling\n", BMS_WallclimbCheck_JumpTo1);
+
+		BMS_WallclimbCheck_JumpTo2 = (uint)ORIG_BMS_WallclimbCheck + 0x6;
+		BMS_WallclimbCheck_JumpTo1 = (uint)ORIG_BMS_WallclimbCheck + 0x6 + (uint)*jmpOffset;
+	}
+	else
+	{
+		DevMsg("[server.dll] Can't find BMS Wallclimb check!");
+		Warning("y_spt_bms_enable_wallclimb has no effect.\n");
+	}
 	extern void* gm;
 	if (gm)
 	{
@@ -524,6 +566,11 @@ void ServerDLL::Unhook()
 void ServerDLL::Clear()
 {
 	IHookableNameFilter::Clear();
+
+	ORIG_BMS_WallclimbCheck = nullptr;
+	BMS_WallclimbCheck_JumpTo1 = 0x0;
+	BMS_WallclimbCheck_JumpTo2 = 0x0;
+
 	ORIG_CheckJumpButton = nullptr;
 	ORIG_FinishGravity = nullptr;
 	ORIG_PlayerRunCommand = nullptr;
@@ -804,6 +851,12 @@ void __fastcall ServerDLL::HOOKED_SlidingAndOtherStuff_Func(void* thisptr, int e
 	}
 
 	return ORIG_SlidingAndOtherStuff(thisptr, edx, a, b);
+}
+
+void ServerDLL::HOOKED_BMS_WallclimbCheck_Func() 
+{
+	ORIG_BMS_WallclimbCheck_Jump = y_spt_bms_enable_wallclimb.GetBool();
+	return;
 }
 
 void ServerDLL::HOOKED_MiddleOfSlidingFunction_Func()

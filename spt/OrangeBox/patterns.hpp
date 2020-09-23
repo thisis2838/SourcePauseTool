@@ -273,6 +273,12 @@ namespace patterns
 	namespace server
 	{
 		PATTERNS(
+			BMS_WallclimbCheck, 
+			"standard", 
+			"0F 85 ?? ?? ?? ?? A9 00 04 00 00"
+		)
+
+		PATTERNS(
 		    CheckJumpButton,
 		    "5135",
 		    "83 EC 1C 56 8B F1 8B 4E 04 80 B9 04 0A 00 00 00 74 0E 8B 76 08 83 4E 28 02 32 C0 5E 83 C4 1C C3 D9 EE D8 91 70 0D 00 00",
