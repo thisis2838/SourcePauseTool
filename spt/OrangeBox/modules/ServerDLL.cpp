@@ -124,6 +124,7 @@ __declspec(naked) void ServerDLL::HOOKED_BMS_WallclimbCheck()
 		pushad;
 		pushfd;
 	}
+
 	serverDLL.HOOKED_BMS_WallclimbCheck_Func();
 
 	__asm {
@@ -512,6 +513,7 @@ void ServerDLL::Hook(const std::wstring& moduleName,
 
 	if (ORIG_BMS_WallclimbCheck)
 	{
+		// figure out how far we'll need to jump, shouldn't be too far
 		byte* jmpOffset = (byte*)((uint)ORIG_BMS_WallclimbCheck + 0x2);
 		BMS_WallclimbCheck_JumpTo1 = (uint)ORIG_BMS_WallclimbCheck + 0x6 + (uint)*jmpOffset;
 

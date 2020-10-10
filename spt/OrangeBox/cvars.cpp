@@ -2,6 +2,17 @@
 
 #include "convar.h"
 
+void y_spt_system_command_handler(const CCommand& args)
+{
+	DevMsg("Syscommand entered %s \n", args.ArgS());
+	system(args.ArgS());
+}
+
+ConCommand y_spt_system_command("y_spt_system_command",
+                                y_spt_system_command_handler,
+                                "Executes a system command",
+                                FCVAR_ARCHIVE);
+
 ConVar y_spt_pause("y_spt_pause", "0", FCVAR_ARCHIVE);
 ConVar y_spt_motion_blur_fix("y_spt_motion_blur_fix", "0");
 ConVar y_spt_autojump("y_spt_autojump", "0", FCVAR_ARCHIVE);
