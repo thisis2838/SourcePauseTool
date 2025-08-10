@@ -31,6 +31,8 @@ namespace patterns
 	         "7122284",
 	         "55 8B EC 8B 45 08 B9 01 00 00 00 85 C0 0F 44 C1 A3 ?? ?? ?? ?? 5D C3");
 	PATTERNS(CBasePlayer__InitVCollision,
+	         "underhell",
+	         "55 8B EC 57 8B F9 8B 07 8B 90 ?? ?? ?? ?? FF D2 A1 ?? ?? ?? ?? 83 78 30 00",
 	         "5135",
 	         "57 8B F9 8B 07 8B 90 ?? ?? ?? ?? FF D2 A1 ?? ?? ?? ?? 83 78 30 00",
 	         "7122284",
